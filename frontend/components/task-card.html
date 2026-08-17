@@ -1,0 +1,21 @@
+<!--
+  Task card template.
+
+  This is the canonical markup for one task row, used as the reference
+  for the renderTaskCard() function in js/tasks.js (rendered dynamically
+  since task lists are data-driven). Kept here as documentation/reference
+  and as a static fallback if you want to hand-build a page.
+
+  Placeholders: {{CHECK_CLASS}} {{TITLE}} {{SUBJECT}} {{DUE}} {{PRIORITY_CHIP}}
+-->
+<div class="card task-card">
+  <div class="check {{CHECK_CLASS}}"><i data-lucide="check" width="13"></i></div>
+  <div style="flex:1">
+    <div class="title">{{TITLE}}</div>
+    <div class="meta">
+      <span>{{SUBJECT}}</span>
+      <span class="mono">{{DUE}}</span>
+      {{PRIORITY_CHIP}}
+    </div>
+  </div>
+</div>

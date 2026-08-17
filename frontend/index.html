@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>StudySync — Sign in</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
+<script src="https://unpkg.com/lucide@latest"></script>
+<link rel="stylesheet" href="/css/style.css" />
+<style>
+  body { display: flex; min-height: 100vh; align-items: center; justify-content: center; }
+  .auth-wrap { width: 100%; max-width: 380px; padding: 20px; }
+  .auth-card { padding: 32px 28px; }
+  .auth-brand { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; font-family: var(--font-display); font-size: 22px; font-weight: 700; }
+  .auth-brand .dot { width: 10px; height: 10px; border-radius: 50%; background: var(--lamp); }
+  .auth-sub { color: var(--fg-dim); font-size: 13px; margin-bottom: 24px; }
+  .auth-tabs { display: flex; gap: 18px; margin-bottom: 20px; border-bottom: 1px solid var(--border); }
+  .auth-tab { padding-bottom: 10px; font-size: 14px; font-weight: 600; color: var(--fg-dim); border-bottom: 2px solid transparent; }
+  .auth-tab.active { color: var(--fg); border-bottom-color: var(--lamp); }
+  .auth-error { color: var(--danger); font-size: 13px; margin-top: 10px; display: none; }
+  .full-btn { width: 100%; justify-content: center; margin-top: 6px; }
+</style>
+</head>
+<body class="lamp-glow">
+  <div class="auth-wrap">
+    <div class="card auth-card">
+      <div class="auth-brand"><span class="dot"></span> StudySync</div>
+      <div class="auth-sub">Everything you're studying, in one place.</div>
+
+      <div class="auth-tabs">
+        <div class="auth-tab active" data-tab="login" id="tab-login">Sign in</div>
+        <div class="auth-tab" data-tab="register" id="tab-register">Create account</div>
+      </div>
+
+      <form id="login-form">
+        <div class="form-row"><label for="login-email">Email</label><input id="login-email" type="email" required /></div>
+        <div class="form-row"><label for="login-password">Password</label><input id="login-password" type="password" required /></div>
+        <button class="btn btn-primary full-btn" type="submit">Sign in</button>
+        <div class="auth-error" id="login-error"></div>
+      </form>
+
+      <form id="register-form" style="display:none">
+        <div class="form-row"><label for="reg-name">Name</label><input id="reg-name" type="text" required /></div>
+        <div class="form-row"><label for="reg-email">Email</label><input id="reg-email" type="email" required /></div>
+        <div class="form-row"><label for="reg-password">Password</label><input id="reg-password" type="password" minlength="6" required /></div>
+        <button class="btn btn-primary full-btn" type="submit">Create account</button>
+        <div class="auth-error" id="register-error"></div>
+      </form>
+    </div>
+  </div>
+
+  <script src="/js/app.js"></script>
+  <script>
+    if (Auth.isLoggedIn()) location.href = "/dashboard.html";
+
+    const tabs = { login: document.getElementById("tab-login"), register: document.getElementById("tab-register") };
+    const forms = { login: document.getElementById("login-form"), register: document.getElementById("register-form") };
+    function showTab(name) {
+      Object.keys(tabs).forEach(k => {
+        tabs[k].classList.toggle("active", k === name);
+        forms[k].style.display = k === name ? "block" : "none";
+      });
+    }
+    tabs.login.addEventListener("click", () => showTab("login"));
+    tabs.register.addEventListener("click", () => showTab("register"));
+
+    document.getElementById("login-form").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const errorEl = document.getElementById("login-error");
+      errorEl.style.display = "none";
+      try {
+        const data = await api("/api/auth/login", {
+          method: "POST",
+          body: {
+            email: document.getElementById("login-email").value,
+            password: document.getElementById("login-password").value,
+          },
+        });
+        Auth.setToken(data.access_token);
+        Auth.setUser(data.user);
+        location.href = "/dashboard.html";
+      } catch (err) {
+        errorEl.textContent = err.message;
+        errorEl.style.display = "block";
+      }
+    });
+
+    document.getElementById("register-form").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const errorEl = document.getElementById("register-error");
+      errorEl.style.display = "none";
+      try {
+        const data = await api("/api/auth/register", {
+          method: "POST",
+          body: {
+            name: document.getElementById("reg-name").value,
+            email: document.getElementById("reg-email").value,
+            password: document.getElementById("reg-password").value,
+          },
+        });
+        Auth.setToken(data.access_token);
+        Auth.setUser(data.user);
+        location.href = "/dashboard.html";
+      } catch (err) {
+        errorEl.textContent = err.message;
+        errorEl.style.display = "block";
+      }
+    });
+
+    refreshIcons();
+  </script>
+</body>
+</html>
