@@ -26,7 +26,7 @@ async function bootApp() {
 }
 
 async function loadPartial(name, selector) {
-  const res = await fetch(`/components/${name}.html`);
+  const res = await appFetch(`/components/${name}.html`, undefined, "Loading interface...");
   const html = await res.text();
   document.querySelector(selector).innerHTML = html;
 }

@@ -14,6 +14,69 @@ const Auth = {
   isLoggedIn() { return !!this.getToken(); },
 };
 
+const Loading = {
+  pending: 0,
+  overlay: null,
+  showTimer: null,
+  delayMs: 120,
+};
+
+function ensureLoadingOverlay() {
+  if (Loading.overlay) return Loading.overlay;
+  const overlay = document.createElement("div");
+  overlay.className = "global-loading";
+  overlay.setAttribute("aria-hidden", "true");
+  overlay.innerHTML = `
+    <div class="global-loading-panel" role="status" aria-live="polite">
+      <div class="global-loading-spinner"></div>
+      <div class="global-loading-text">Loading...</div>
+    </div>
+  `;
+  document.body.appendChild(overlay);
+  Loading.overlay = overlay;
+  return overlay;
+}
+
+function showLoading(message = "Loading...") {
+  Loading.pending += 1;
+  const overlay = ensureLoadingOverlay();
+  const text = overlay.querySelector(".global-loading-text");
+  if (text) text.textContent = message;
+
+  if (Loading.pending === 1) {
+    Loading.showTimer = window.setTimeout(() => {
+      overlay.classList.add("visible");
+      overlay.setAttribute("aria-hidden", "false");
+      document.body.classList.add("is-busy");
+    }, Loading.delayMs);
+  }
+}
+
+function hideLoading() {
+  Loading.pending = Math.max(0, Loading.pending - 1);
+  if (Loading.pending > 0) return;
+
+  window.clearTimeout(Loading.showTimer);
+  Loading.showTimer = null;
+  if (!Loading.overlay) return;
+  Loading.overlay.classList.remove("visible");
+  Loading.overlay.setAttribute("aria-hidden", "true");
+  document.body.classList.remove("is-busy");
+}
+
+async function withLoading(task, message = "Loading...") {
+  showLoading(message);
+  try {
+    return await task();
+  } finally {
+    hideLoading();
+  }
+}
+
+async function appFetch(url, options, message = "Loading...") {
+  return withLoading(() => fetch(url, options), message);
+}
+
 async function api(path, { method = "GET", body, headers = {} } = {}) {
   const opts = { method, headers: { ...headers } };
   if (body !== undefined) {
@@ -23,7 +86,8 @@ async function api(path, { method = "GET", body, headers = {} } = {}) {
   const token = Auth.getToken();
   if (token) opts.headers["Authorization"] = `Bearer ${token}`;
 
-  const res = await fetch(API_BASE + path, opts);
+  const action = method === "GET" ? "Loading..." : "Processing...";
+  const res = await appFetch(API_BASE + path, opts, action);
   if (res.status === 401) {
     Auth.clear();
     if (!location.pathname.endsWith("index.html") && location.pathname !== "/") {
