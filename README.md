@@ -77,6 +77,12 @@ or equivalently:
 uvicorn app.main:app --reload
 ```
 
+For Render, use this start command:
+
+```bash
+uvicorn app.main:app --host 0.0.0.0 --port $PORT
+```
+
 The app creates its SQLite database (`studysync.db`) automatically on
 first run — no migrations to run.
 
