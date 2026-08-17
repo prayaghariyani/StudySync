@@ -81,16 +81,16 @@ app.mount("/components", StaticFiles(directory=os.path.join(FRONTEND_DIR, "compo
 app.mount("/static", StaticFiles(directory=os.path.join(BASE_DIR, "static")), name="static")
 
 
-@app.get("/", include_in_schema=False)
+@app.api_route("/", methods=["GET", "HEAD"], include_in_schema=False)
 def serve_index():
     return FileResponse(os.path.join(FRONTEND_DIR, "index.html"))
 
 
-@app.get("/dashboard.html", include_in_schema=False)
+@app.api_route("/dashboard.html", methods=["GET", "HEAD"], include_in_schema=False)
 def serve_dashboard():
     return FileResponse(os.path.join(FRONTEND_DIR, "dashboard.html"))
 
 
-@app.get("/health", tags=["meta"])
+@app.api_route("/health", methods=["GET", "HEAD"], tags=["meta"])
 def health_check():
     return {"status": "ok", "service": "StudySync"}
