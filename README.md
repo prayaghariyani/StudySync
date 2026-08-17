@@ -61,8 +61,9 @@ Use Neon Postgres in deployment:
 DATABASE_URL=postgresql+psycopg://USER:PASSWORD@ep-xxxx.region.aws.neon.tech/DBNAME?sslmode=require
 ```
 
-For Render, this repo pins Python in `runtime.txt` so deployment uses a
-version with prebuilt wheels for core dependencies like `pydantic-core`.
+For Render, set `PYTHON_VERSION=3.12.10` in the dashboard or keep the
+included `.python-version` file so deployment uses a version with
+prebuilt wheels for core dependencies like `pydantic-core`.
 
 ### 4. Run the app
 
