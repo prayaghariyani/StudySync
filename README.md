@@ -43,7 +43,25 @@ source venv/bin/activate      # Windows: venv\Scripts\activate
 pip install -r requirements.txt
 ```
 
-### 3. Run the app
+### 3. Configure environment
+
+```bash
+cp .env.example .env
+```
+
+Use SQLite for local development:
+
+```bash
+DATABASE_URL=sqlite:///./studysync.db
+```
+
+Use Neon Postgres in deployment:
+
+```bash
+DATABASE_URL=postgresql+psycopg://USER:PASSWORD@ep-xxxx.region.aws.neon.tech/DBNAME?sslmode=require
+```
+
+### 4. Run the app
 
 ```bash
 python run.py
@@ -58,7 +76,7 @@ uvicorn app.main:app --reload
 The app creates its SQLite database (`studysync.db`) automatically on
 first run — no migrations to run.
 
-### 4. Open it
+### 5. Open it
 
 - App: **http://localhost:8000**
 - Interactive API docs (Swagger): **http://localhost:8000/docs**
@@ -66,7 +84,7 @@ first run — no migrations to run.
 Register an account on the sign-in page, create a semester, add a
 subject, and you're off.
 
-### 5. Run tests
+### 6. Run tests
 
 ```bash
 pytest
@@ -79,7 +97,7 @@ Environment variables (all optional — sensible defaults are used for local dev
 | Variable | Default | Purpose |
 |---|---|---|
 | `STUDYSYNC_SECRET_KEY` | dev key baked into the repo | JWT signing secret — **set this in production** |
-| `DATABASE_URL` | `sqlite:///./studysync.db` | SQLAlchemy connection string |
+| `DATABASE_URL` | `sqlite:///./studysync.db` | SQLAlchemy connection string. Keep SQLite locally or set a Neon Postgres URL in deployment |
 
 ## Project layout
 

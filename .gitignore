@@ -9,6 +9,8 @@ env/
 *.sqlite3
 studysync.db
 .env
+.env.*
+!.env.example
 .DS_Store
 *.log
 .pytest_cache/

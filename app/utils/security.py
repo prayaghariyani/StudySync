@@ -9,8 +9,12 @@ import os
 from datetime import datetime, timedelta
 from typing import Optional
 
+from dotenv import load_dotenv
 from jose import jwt, JWTError
 from passlib.context import CryptContext
+
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+load_dotenv(os.path.join(BASE_DIR, ".env"))
 
 # In production this MUST come from an environment variable. A default
 # is provided only so the app runs out-of-the-box for local/dev use.
